@@ -10,8 +10,6 @@ import SortDescIcon from './icons/SortDescIcon.vue';
 
 import { toRaw } from 'vue';
 
-
-
 export default {
   data() {
     return {
