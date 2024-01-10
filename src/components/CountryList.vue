@@ -104,6 +104,7 @@ export default {
     },
   },
   computed: {
+
     filteredCountries() {
       // Use Fuzzysort to search by country name
       const searchResults = fuzzysort
