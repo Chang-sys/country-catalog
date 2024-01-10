@@ -1,31 +1,37 @@
 <script>
 // Import Fuzzysort
 import fuzzysort from 'fuzzysort';
+import CountryDetailModal from './CountryDetailModal.vue';
 import SortIcon from './icons/SortIcon.vue';
 // Icon filter Asc from A to Z or 0 to 9
 import SortAscIcon from './icons/SortAscIcon.vue';
 // Icon filter Desc from Z to A or 9 to 0
 import SortDescIcon from './icons/SortDescIcon.vue';
 
+import { toRaw } from 'vue';
+
+
+
 export default {
   data() {
     return {
       countries: [],
-      DataCountries: [],
       searchQuery: "",
       sortOrder: "asc",
       sortOrderIcon: 'default',
       currentPage: 1,
       itemsPerPage: 25,
+      selectedCountry: null,
     };
   },
   components: {
     SortIcon,
     SortAscIcon,
     SortDescIcon,
+    CountryDetailModal,
   },
   mounted() {
-    console.log("API mounted");
+    // console.log("API mounted");
     this.fetchCountries();
   },
   methods: {
@@ -34,28 +40,36 @@ export default {
         const response = await fetch("https://restcountries.com/v3.1/all");
         const data = await response.json();
         this.countries = data;
-        this.DataCountries = data;
       } catch (error) {
         console.error("Error fetching countries:", error);
       }
     },
     toggleSortOrder() {
-      this.sortOrderIcon = this.sortOrderIcon === 'asc' ? 'desc' : 'asc';
-      this.sortedCountries(); // Call the sorting function when the button is clicked
+      if (this.sortOrderIcon === 'asc') {
+        this.sortOrderIcon = 'desc';
+      } else if (this.sortOrderIcon === 'desc') {
+        this.sortOrderIcon = 'default';
+      } else {
+        this.sortOrderIcon = 'asc';
+      }
+
+      this.sortCountries(); // Call the sorting function when the button is clicked
     },
-    sortedCountries() {
-      const sortOrderFactor = this.sortOrderIcon === 'asc' ? 1 : -1;
+    sortCountries() {
+      let sortOrderFactor;
 
-      this.DataCountries.sort((a, b) =>
-        sortOrderFactor * a.name.official.localeCompare(b.name.official)
-      );
-    },
-    sortedCountries() {
+      if (this.sortOrderIcon === 'asc') {
+        sortOrderFactor = 1;
+      } else if (this.sortOrderIcon === 'desc') {
+        sortOrderFactor = -1;
+      } else {
+        // If the order is 'default', reset to the original order fetched from the API
+        this.fetchCountries();
+        return;
+      }
 
-      const sortOrderFactor = this.sortOrderIcon === 'asc' ? 1 : -1;
-
-      return this.countries.sort((a, b) => {
-        const nameA = a.name.official.toLowerCase(); // Ensure consistent case
+      this.countries.sort((a, b) => {
+        const nameA = a.name.official.toLowerCase();
         const nameB = b.name.official.toLowerCase();
 
         return sortOrderFactor * nameA.localeCompare(nameB);
@@ -102,53 +116,72 @@ export default {
       this.uniqueNames.add(name);
       return true;
     },
+    // Open and close the modal with the selected country
+    showCountryModal(country) {
+      // Use toRaw to access the raw object
+      const oneCountry = toRaw(country);
+      this.selectedCountry = oneCountry;
+    },
+    closeCountryModal() {
+      this.selectedCountry = null;
+    },
+
   },
   computed: {
-
-    filteredCountries() {
+    searchAndSortCountries() {
       // Use Fuzzysort to search by country name
       const searchResults = fuzzysort
         .go(this.searchQuery, this.countries, { key: 'name.official' })
         .map(result => result.obj);
 
-      // If no search query or no matching results, return the original countries
+      // If no search query or no matching results, return the original countries with sorting
       if (!this.searchQuery || searchResults.length === 0) {
-        return this.sortedCountries(); // Call the sorting function
+        return this.countries; // Call the sorting function
       }
 
-      // Sort the search results based on the selected order
-      const sortOrderFactor = this.sortOrderIcon === 'asc' ? 1 : -1;
-      searchResults.sort((a, b) =>
-        sortOrderFactor * a.name.official.localeCompare(b.name.official)
-      );
+      this.currentPage = 1;
 
-      return searchResults;
+      // Sort the search results based on the current sorting order
+      return searchResults.sort((a, b) => {
+        const nameA = a.name.official.toLowerCase();
+        const nameB = b.name.official.toLowerCase();
+        const sortOrderFactor = this.sortOrderIcon === 'asc' ? 1 : -1;
+
+        return sortOrderFactor * nameA.localeCompare(nameB);
+      });
     },
-
     totalPages() {
-      return Math.ceil(this.filteredCountries.length / this.itemsPerPage);
+      return Math.ceil(this.searchAndSortCountries.length / this.itemsPerPage);
     },
     paginatedCountries() {
       const start = (this.currentPage - 1) * this.itemsPerPage;
       const end = start + this.itemsPerPage;
-      return this.filteredCountries.slice(start, end);
+      return this.searchAndSortCountries.slice(start, end);
+    },
+    showPreviousButton() {
+      return this.currentPage !== 1;
+    },
+    showNextButton() {
+      return this.currentPage !== this.totalPages;
     },
   },
-};
+
+};	
 </script>
 
 <template>
   <div class="h-screen py-6 flex flex-col items-center text-center">
+    <!-- Title -->
     <h1 class="text-black text-4xl font-bold mb-4">Country Lists</h1>
 
-    <!-- add div for search country by name -->
+    <!-- Add div for search country by name -->
     <div class="mb-4 flex items-center">
       <label for="search" class="sr-only">Search Country by name</label>
-      <input v-model="searchQuery" type="text" id="search" placeholder="Search by Country Name"
+      <input v-model="searchQuery" type="search" id="search" placeholder="Search by Country Name"
         class="py-2 px-4 border-2 border-black rounded w-64 ml-auto" />
     </div>
 
-    <div class="mt-0 w-11/12 h-fit overflow-y-auto overflow-x-auto relative shadow-md sm:rounded-lg">
+    <div class="w-11/12 h-fit overflow-y-auto overflow-x-auto relative shadow-md sm:rounded-lg">
       <table class="w-full border border-collapse">
         <thead class="h-fit sticky top-0 bg-gray-200 z-10">
           <tr class="bg-gray-200">
@@ -174,11 +207,16 @@ export default {
             <!-- NO -->
             <td class="py-2 px-4">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
             <!-- Flags -->
-            <td class="w-48 py-2 px-3 flex justify-center items-center">
+            <td class="py-2 px-4 border-2 border-black p-2 my-2">
               <img :src="country.flags.png" alt="Flag" class="w-fit h-fit object-cover rounded mb-2" />
             </td>
             <!-- Country Name -->
-            <td class="py-2 px-4">{{ country.name.official }}</td>
+            <td class="py-2 px-4">
+              <!-- Open the modal on country name click -->
+              <button @click="showCountryModal(country)" class="text-black hover:text-blue-500">
+                {{ country.name.official }}
+              </button>
+            </td>
             <!-- 2-characters Country Code -->
             <td class="py-2 px-4">{{ country.cca2 }}</td>
             <!-- 3-characters Country Code -->
@@ -204,9 +242,12 @@ export default {
 
     <!-- Pagination -->
     <div class="flex justify-center items-center mt-4">
-      <button @click="prevPage" :disabled="currentPage === 1"
-        class="px-4 py-2 bg-blue-500 text-white mr-2 rounded-lg shadow-md">
-        Previous</button>
+      <button v-if="showPreviousButton" @click="prevPage" :disabled="currentPage === 1"
+        class="
+            text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br hover:text-black
+            focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm text-center px-4 py-2 ml-2 shadow-md">
+        Previous
+      </button>
 
       <!-- Display a block of numbers as buttons -->
       <template v-for="page in totalPages">
@@ -214,9 +255,15 @@ export default {
           class="px-4 py-2 mx-1 hover:bg-blue-300 shadow-md hover:text-black border-2 rounded-lg">{{ page }}</button>
       </template>
 
-      <button @click="nextPage" :disabled="currentPage === totalPages"
-        class="px-4 py-2 bg-blue-500 text-white ml-2 rounded-lg shadow-md">Next</button>
+      <button v-if="showNextButton" @click="nextPage" :disabled="currentPage === totalPages"
+        class="
+            text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br hover:text-black
+            focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm text-center px-4 py-2 ml-2 shadow-md">
+        Next
+      </button>
     </div>
-
   </div>
+
+  <!-- Modal -->
+  <CountryDetailModal v-if="selectedCountry" :country="selectedCountry" @closeModal="closeCountryModal" />
 </template>
