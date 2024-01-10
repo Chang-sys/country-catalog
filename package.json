@@ -6,11 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview",
-    "start": "nodemon index.js"
+    "preview": "vite preview"
   },
   "dependencies": {
-    "nodemon": "^3.0.2",
+    "fuzzysort": "^2.0.4",
     "vue": "^3.3.11"
   },
   "devDependencies": {

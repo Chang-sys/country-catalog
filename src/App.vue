@@ -7,7 +7,6 @@
     },
     // Your component logic goes here
   };
-
 </script>
 
 <template>
