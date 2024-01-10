@@ -7,7 +7,6 @@ import SortAscIcon from './icons/SortAscIcon.vue';
 // Icon filter Desc from Z to A or 9 to 0
 import SortDescIcon from './icons/SortDescIcon.vue';
 
-
 export default {
   data() {
     return {
@@ -139,7 +138,7 @@ export default {
 </script>
 
 <template>
-  <div class="py-6 flex flex-col items-center text-center">
+  <div class="h-screen py-6 flex flex-col items-center text-center">
     <h1 class="text-black text-4xl font-bold mb-4">Country Lists</h1>
 
     <!-- add div for search country by name -->
@@ -149,7 +148,7 @@ export default {
         class="py-2 px-4 border-2 border-black rounded w-64 ml-auto" />
     </div>
 
-    <div class="mt-0 w-11/12 h-[486px] overflow-y-auto overflow-x-auto relative shadow-md sm:rounded-lg">
+    <div class="mt-0 w-11/12 h-fit overflow-y-auto overflow-x-auto relative shadow-md sm:rounded-lg">
       <table class="w-full border border-collapse">
         <thead class="h-fit sticky top-0 bg-gray-200 z-10">
           <tr class="bg-gray-200">
