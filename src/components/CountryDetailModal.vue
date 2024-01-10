@@ -1,6 +1,7 @@
 <script>
 import { toRaw } from 'vue';
-import CloseIcon from './icons/CloseIcon.vue';
+import CloseIcon from './icons/CrossXIcon.vue';
+
 
 export default {
   data() {
@@ -41,10 +42,12 @@ export default {
     <div class="blur-2xl absolute inset-0 bg-gray-900 opacity-50"></div>
 
 
-    <div class="bg-white h-[660px] max-w-screen-lg rounded-lg z-10 overflow-y-auto">
-      <div class="bg-gray-300 shadow-md p-6 sticky top-0 flex justify-between items-center">
+    <div class="w-full bg-white h-[660px] max-w-screen-lg rounded-lg z-10 overflow-y-auto">
+      <div class="shadow-md p-6 sticky top-0 flex justify-between items-center">
+
         <h2 class="text-3xl font-semibold">Country Detail</h2>
-        <button @click="closeModal" class="text-gray-500 hover:text-gray-700">
+
+        <button @click="closeModal" class="animate-bounce text-gray-500 hover:text-gray-700">
           <CloseIcon />
         </button>
       </div>
@@ -60,7 +63,7 @@ export default {
         <div class="col-span-1 row-span-1"><strong>Official name:</strong>{{ country.name.official }}</div>
         <div class="col-span-1 row-span-1"><strong>Capital:</strong> 
           <template v-for="(capital, code) in country.capital" :key="code">
-            &nbsp;{{ capital }}
+            &nbsp;{{ capital }} 
           </template>
         </div>
         <div class="col-span-1 row-span-1"><strong>Car side:</strong> {{ country.car.side }}</div>
@@ -91,7 +94,3 @@ export default {
     </div>
   </div>
 </template>
-
-
-  
-  
