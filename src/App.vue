@@ -10,7 +10,7 @@
 </script>
 
 <template>
-  <div id="app">
+  <div>
     <CountryList />
   </div>
 </template>
