@@ -78,17 +78,35 @@ export default {
       const root = idd.root || ''; // Handle the case when root is undefined
       const suffixes = idd.suffixes ? idd.suffixes.join('') : '';
       const fullString = root + suffixes;
+      const chunks = [];
+
+      if (fullString == "") {
+        return "NULL";
+      }
 
       if (fullString.length > 25) {
-        // If the string is longer than 25 characters, truncate it and add "..."
-        return fullString.substring(0, 25) + '...';
-      } else if (fullString.length > 7) {
-        // If the string is longer than 7 characters, add a comma every 7 characters
-        const chunks = [];
-        for (let i = 0; i < fullString.length; i += 7) {
-          chunks.push(fullString.substring(i, i + 7));
+        const truncatedString = fullString.substring(0, 25) + '...';
+
+        // Insert a comma after every 3 characters starting from the 5th character
+        const stringWithCommasAfter5 = truncatedString.substring(0, 5) +
+          truncatedString.substring(5).replace(/(.{3})/g, '$1,');
+
+        // Remove the trailing comma if it exists
+        const stringWithoutTrailingComma = stringWithCommasAfter5.replace(/,$/, '');
+
+        return stringWithoutTrailingComma;
+      } else if (fullString.length > 4) {
+        // If the string is longer than 4 characters, add a comma every 4 characters
+        for (let i = 0; i < fullString.length; i += 4) {
+          chunks.push(fullString.substring(i, i + 4));
         }
         return chunks.join(',');
+      } else if (fullString.length > 5) {
+        chunks.replace(/,$/, '');
+        for (let i = 0; i < fullString.length; i += 5) {
+          chunks.push(fullString.substring(i, i + 5));
+        }
+        return chunks.join('');
       } else {
         // Otherwise, return the original string
         return fullString;
@@ -168,22 +186,22 @@ export default {
 </script>
 
 <template>
-  <div class="h-screen py-6 flex flex-col items-center text-center">
-    <!-- Title -->
+  <div class="w-screen h-screen overflow py-6 rounded-lg flex flex-col font-sans items-center text-center border-2 border-gray-200 shadow-xl">
+    <!-- Header -->
     <h1 class="text-black text-4xl font-bold mb-4">Country Lists</h1>
 
     <!-- Add div for search country by name -->
-    <div class="mb-4 flex items-center">
-      <label for="search" class="sr-only">Search Country by name</label>
-      <input v-model="searchQuery" type="search" id="search" placeholder="Search by Country Name"
-        class="py-2 px-4 border-2 border-black rounded w-64 ml-auto" />
+    <div class="mb-4 absolute right-20">
+      <input v-model="searchQuery" type="search" id="search" placeholder="Search Country by Name"
+        class="py-2 px-4 border-2 border-black rounded w-64"/>
     </div>
 
-    <div class="w-11/12 h-fit overflow-y-auto overflow-x-auto relative shadow-md sm:rounded-lg">
+    <!-- Table of data -->
+    <div class="w-11/12 h-fit overflow-y-auto overflow-x-auto scroll-smooth relative shadow-md sm:rounded-lg">
       <table class="w-full border border-collapse">
-        <thead class="h-full sticky top-[-2px] bg-gray-200">
+        <thead class="h-full sticky top-[-10px] bg-gray-200">
           <tr class="bg-gray-200">
-            <th class="py-2 px-4">NO</th>
+            <th class="py-2 px-4">#</th>
             <th class="py-2 px-4">Flags</th>
             <th class="py-2 px-4">
               <button @click="toggleSortOrder">
@@ -202,7 +220,7 @@ export default {
         </thead>
         <tbody>
           <tr v-for="(country, index) in paginatedCountries" :key="country.cca2" class="border-t">
-            <!-- NO -->
+            <!-- # -->
             <td class="py-2 px-4">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
             <!-- Flags -->
             <td class="mt-6 flex justify-center items-center py-2 px-4 border-2 border-black p-2 my-2">
@@ -221,13 +239,16 @@ export default {
             <td class="py-2 px-4">{{ country.cca3 }}</td>
             <!-- Native Country Name -->
             <td class="w-36 py-2 px-4">
+              <p class="text-black" v-if="!country.name.nativeName">NULL</p>
               <div v-for="(nativeName, langCode) in country.name.nativeName" :key="langCode">
-                <p>{{ langCode }}: {{ nativeName.official }}, {{ nativeName.common }}</p>
+                <p> {{ langCode }}: {{ nativeName.official }}, {{ nativeName.common }} </p>
               </div>
             </td>
             <!-- Alternative Country Name -->
-            <td class="w-10 py-2 px-4" v-if="country.altSpellings && country.altSpellings.length > 0">
-              <div class="p-2 flex flex-col align-items-left justify-start text-left">
+            <td class="w-10 py-2 px-4">
+              <p v-if="country.altSpellings && country.altSpellings.length < 0">N/A</p>
+              <div v-if="country.altSpellings && country.altSpellings.length > 0"
+                class="p-2 flex flex-col align-items-left justify-start text-left">
                 <p>{{ country.altSpellings.join(", ") }}</p>
               </div>
             </td>
@@ -237,13 +258,14 @@ export default {
         </tbody>
       </table>
     </div>
+      <!-- end of Table of data -->
 
     <!-- Pagination -->
     <div class="flex justify-center items-center mt-4">
       <button v-if="showPreviousButton" @click="prevPage" :disabled="currentPage === 1"
         class="
-            text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br hover:text-black
-            focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm text-center px-4 py-2 ml-2 shadow-md">
+            text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-400 hover:bg-gradient-to-br hover:text-black
+            focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm text-center px-4 py-2 mx-3.5 shadow-md">
         Previous
       </button>
 
@@ -255,11 +277,13 @@ export default {
 
       <button v-if="showNextButton" @click="nextPage" :disabled="currentPage === totalPages"
         class="
-            text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br hover:text-black
-            focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm text-center px-4 py-2 ml-2 shadow-md">
+            text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-400 hover:bg-gradient-to-br hover:text-black
+            focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm text-center px-4 py-2 mx-3.5 shadow-md">
         Next
       </button>
     </div>
+   <!-- End Pagination -->
+
   </div>
 
   <!-- Modal -->
