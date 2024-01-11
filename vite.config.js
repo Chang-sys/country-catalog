@@ -5,7 +5,8 @@ import vue from '@vitejs/plugin-vue'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: '/country_catalog/',
+  base: '/country-catalog/',
+  // publicDir: 'country_catelog',
   plugins: [ vue() ],
   resolve: {
     alias: {

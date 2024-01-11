@@ -79,14 +79,14 @@ export default {
       const suffixes = idd.suffixes ? idd.suffixes.join('') : '';
       const fullString = root + suffixes;
 
-      if (fullString.length > 30) {
-        // If the string is longer than 30 characters, truncate it and add "..."
-        return fullString.substring(0, 30) + '...';
+      if (fullString.length > 25) {
+        // If the string is longer than 25 characters, truncate it and add "..."
+        return fullString.substring(0, 25) + '...';
       } else if (fullString.length > 7) {
-        // If the string is longer than 6 characters, add a comma every 6 characters
+        // If the string is longer than 7 characters, add a comma every 7 characters
         const chunks = [];
-        for (let i = 0; i < fullString.length; i += 6) {
-          chunks.push(fullString.substring(i, i + 6));
+        for (let i = 0; i < fullString.length; i += 7) {
+          chunks.push(fullString.substring(i, i + 7));
         }
         return chunks.join(',');
       } else {
@@ -181,7 +181,7 @@ export default {
 
     <div class="w-11/12 h-fit overflow-y-auto overflow-x-auto relative shadow-md sm:rounded-lg">
       <table class="w-full border border-collapse">
-        <thead class="h-fit sticky top-0 bg-gray-200 z-10">
+        <thead class="h-full sticky top-[-2px] bg-gray-200">
           <tr class="bg-gray-200">
             <th class="py-2 px-4">NO</th>
             <th class="py-2 px-4">Flags</th>
@@ -205,7 +205,7 @@ export default {
             <!-- NO -->
             <td class="py-2 px-4">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
             <!-- Flags -->
-            <td class="py-2 px-4 border-2 border-black p-2 my-2">
+            <td class="mt-6 flex justify-center items-center py-2 px-4 border-2 border-black p-2 my-2">
               <img :src="country.flags.png" alt="Flag" class="w-fit h-fit object-cover rounded mb-2" />
             </td>
             <!-- Country Name -->

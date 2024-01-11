@@ -43,19 +43,19 @@ export default {
 
 
     <div class="w-full bg-white h-[660px] max-w-screen-lg rounded-lg z-10 overflow-y-auto">
-      <div class="shadow-md p-6 sticky top-0 flex justify-between items-center">
+      <div class="shadow-md bg-gray-500 p-6 sticky top-0 flex justify-between items-center">
 
-        <h2 class="text-3xl font-semibold">Country Detail</h2>
+        <h2 class="text-white text-3xl font-semibold">Country Detail</h2>
 
-        <button @click="closeModal" class="animate-bounce text-gray-500 hover:text-gray-700">
+        <button @click="closeModal" class="animate-bounce">
           <CloseIcon />
         </button>
       </div>
-      <hr class="w-full sticky top-20">
+
 
       <!-- Modal Body -->
       <div class="w-fit h-fit grid grid-cols-3 grid-rows-5 gap-4 text-center justify-center items-center">
-        <!-- First column, first row (larger) for image -->
+
         <div class="col-span-3 row-span-1 py-2 px-4 flex justify-center items-center">
           <img :src="flags" alt="Flag" class="w-fit h-fit object-cover rounded mb-2" />
         </div>
