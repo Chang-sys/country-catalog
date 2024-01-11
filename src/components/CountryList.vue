@@ -193,16 +193,16 @@ export default {
     <!-- Add div for search country by name -->
     <div class="mb-4 absolute right-20">
       <input v-model="searchQuery" type="search" id="search" placeholder="Search Country by Name"
-        class="py-2 px-4 border-2 border-black rounded w-64"/>
+        class="py-2 px-4 border-2 border-black rounded w-fit"/>
     </div>
 
     <!-- Table of data -->
-    <div class="w-11/12 h-fit overflow-y-auto overflow-x-auto scroll-smooth relative shadow-md sm:rounded-lg">
+    <div class="w-11/12 h-fit text-center overflow-y-auto overflow-x-auto scroll-smooth relative shadow-md sm:rounded-lg">
       <table class="w-full border border-collapse">
-        <thead class="h-full sticky top-[-10px] bg-gray-200">
+        <thead class="h-28 sticky top-[-10px] bg-gray-200">
           <tr class="bg-gray-200">
             <th class="py-2 px-4">#</th>
-            <th class="py-2 px-4">Flags</th>
+            <th class="w-fit py-2 px-4">Flags</th>
             <th class="py-2 px-4">
               <button @click="toggleSortOrder">
                 Country Name
@@ -213,9 +213,9 @@ export default {
             </th>
             <th class="py-2 px-4">2-charactesr Country Code</th>
             <th class="py-2 px-4">3-characters Country Code</th>
-            <th class="w-36 py-2 px-4">Native Country Name</th>
-            <th class="w-36 py-2 px-4">Alternative Country Name</th>
-            <th class="py-2 px-4">Country Calling Codes</th>
+            <th class="w-fit py-2 px-4">Native Country Name</th>
+            <th class="w-fit py-2 px-4 text-center">Alternative Country Name</th>
+            <th class="w-fit py-2 px-4">Country Calling Codes</th>
           </tr>
         </thead>
         <tbody>
@@ -223,7 +223,7 @@ export default {
             <!-- # -->
             <td class="py-2 px-4">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
             <!-- Flags -->
-            <td class="mt-6 flex justify-center items-center py-2 px-4 border-2 border-black p-2 my-2">
+            <td class="w-fit mt-6 flex justify-center items-center py-2 px-4 border-2 border-black p-2 my-2">
               <img :src="country.flags.png" alt="Flag" class="w-fit h-fit object-cover rounded mb-2" />
             </td>
             <!-- Country Name -->
@@ -238,14 +238,14 @@ export default {
             <!-- 3-characters Country Code -->
             <td class="py-2 px-4">{{ country.cca3 }}</td>
             <!-- Native Country Name -->
-            <td class="w-36 py-2 px-4">
+            <td class="w-fit py-2 px-4">
               <p class="text-black" v-if="!country.name.nativeName">NULL</p>
               <div v-for="(nativeName, langCode) in country.name.nativeName" :key="langCode">
                 <p> {{ langCode }}: {{ nativeName.official }}, {{ nativeName.common }} </p>
               </div>
             </td>
             <!-- Alternative Country Name -->
-            <td class="w-10 py-2 px-4">
+            <td class="w-fit py-2 px-4 text-center">
               <p v-if="country.altSpellings && country.altSpellings.length < 0">N/A</p>
               <div v-if="country.altSpellings && country.altSpellings.length > 0"
                 class="p-2 flex flex-col align-items-left justify-start text-left">
@@ -253,7 +253,7 @@ export default {
               </div>
             </td>
             <!-- Country Calling Codes -->
-            <td class="py-2 px-4">{{ formatCountryId(country.idd) }}</td>
+            <td class="w-fit py-2 px-4">{{ formatCountryId(country.idd) }}</td>
           </tr>
         </tbody>
       </table>
