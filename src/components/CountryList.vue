@@ -203,7 +203,7 @@ export default {
           <tr class="bg-gray-200">
             <th class="py-2 px-4">#</th>
             <th class="w-fit py-2 px-4">Flags</th>
-            <th class="py-2 px-4">
+            <th class="w-56 py-2 px-4">
               <button @click="toggleSortOrder">
                 Country Name
                 <SortIcon v-if="sortOrderIcon === 'default'" class="w-4 h-4 ml-10 inline" />
