@@ -215,7 +215,7 @@ export default {
             <th class="py-2 px-4">3-characters Country Code</th>
             <th class="w-fit py-2 px-4">Native Country Name</th>
             <th class="w-fit py-2 px-4 text-center">Alternative Country Name</th>
-            <th class="w-fit py-2 px-4">Country Calling Codes</th>
+            <th class="w-48 py-2 px-4">Country Calling Codes</th>
           </tr>
         </thead>
         <tbody>
