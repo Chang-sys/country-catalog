@@ -28,3 +28,10 @@ coverage
 *.sw?
 
 *.tsbuildinfo
+
+# ENV file
+.env
+
+# Package lock files
+package-lock.json
+yarn.lock
